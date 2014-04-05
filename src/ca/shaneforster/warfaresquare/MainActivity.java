@@ -19,11 +19,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnMarkerClickListener{
 	private MapFragment warMapFragment;
 	private GoogleMap warMap;
 	private DrawerLayout mDrawerLayout;
@@ -125,13 +128,24 @@ public class MainActivity extends Activity {
 		
 		if (warMap == null)
 			Toast.makeText(this, "No Map!", Toast.LENGTH_LONG).show();
+		//TODO get nearby venues
 		
 		
 		//TODO Draw nearby venues using
-		warMap.addMarker(new MarkerOptions().position(new LatLng(44.3543318, -79.7071555)).title("Example Location"));
-		warMap.setMyLocationEnabled(true);
+		warMap.addMarker(new MarkerOptions().position(new LatLng(43.656746, -79.380484))
+				.title("Canadaland").
+				icon(BitmapDescriptorFactory.fromResource(R.drawable.mk_flag_ca)));
+		warMap.addMarker(new MarkerOptions().position(new LatLng(43.657780, -79.379088))
+				.title("Franceland").
+				icon(BitmapDescriptorFactory.fromResource(R.drawable.mk_flag_fr)));
+		warMap.addMarker(new MarkerOptions().position(new LatLng(43.6583927, -79.380994))
+				.title("GermanyLand").
+				icon(BitmapDescriptorFactory.fromResource(R.drawable.mk_flag_de)));
 		
-		Toast.makeText(this, Boolean.toString(warMap.getUiSettings().isMyLocationButtonEnabled()), Toast.LENGTH_LONG).show();
+		warMap.setMyLocationEnabled(true);
+		warMap.setOnMarkerClickListener(this);
+		
+		
 		
 	}
 
@@ -193,6 +207,13 @@ public class MainActivity extends Activity {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggls
 		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+	
+	public boolean onMarkerClick(Marker m){
+		//Filler
+		Toast.makeText(this, m.getTitle(), Toast.LENGTH_LONG).show();
+		//TODO Open Attack Menu
+		return true;
 	}
 
 
