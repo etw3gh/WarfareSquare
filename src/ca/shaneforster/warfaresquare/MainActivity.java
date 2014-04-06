@@ -3,6 +3,7 @@ package ca.shaneforster.warfaresquare;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -17,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends Activity implements OnMarkerClickListener{
+	public static final String VENUE_NAME = "ca.shaneforster.warfaresquare.VENUE_NAME";
 	private MapFragment warMapFragment;
 	private GoogleMap warMap;
 	private DrawerLayout mDrawerLayout;
@@ -131,17 +132,17 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 		//TODO get nearby venues
 		
 		
-		//TODO Draw nearby venues using
-		warMap.addMarker(new MarkerOptions().position(new LatLng(43.656746, -79.380484))
-				.title("Canadaland").
-				icon(BitmapDescriptorFactory.fromResource(R.drawable.mk_flag_ca)));
-		warMap.addMarker(new MarkerOptions().position(new LatLng(43.657780, -79.379088))
-				.title("Franceland").
-				icon(BitmapDescriptorFactory.fromResource(R.drawable.mk_flag_fr)));
-		warMap.addMarker(new MarkerOptions().position(new LatLng(43.6583927, -79.380994))
-				.title("GermanyLand").
-				icon(BitmapDescriptorFactory.fromResource(R.drawable.mk_flag_de)));
+		Venue nearby[] = new Venue[25];
+		nearby[0] = new Venue("Name 1", new LatLng(43.656746, -79.380484), "Owner");
+		nearby[1] = new Venue("Name 2", new LatLng(43.657780, -79.379088), "Owner 2");
+		nearby[2] = new Venue("Name 3", new LatLng(43.6583927, -79.380994), "Owner 3");
 		
+		//TODO Draw nearby venues using
+
+		for (Venue v : nearby){
+			if (v != null)
+				warMap.addMarker(v.genMarkerOptions());
+		}
 		warMap.setMyLocationEnabled(true);
 		warMap.setOnMarkerClickListener(this);
 		
@@ -211,7 +212,10 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 	
 	public boolean onMarkerClick(Marker m){
 		//Filler
-		Toast.makeText(this, m.getTitle(), Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, m.getTitle(), Toast.LENGTH_LONG).show();
+		Intent intent = new Intent(this, AttackDialogActivity.class);
+		intent.putExtra(VENUE_NAME, m.getTitle());
+		startActivity(intent);
 		//TODO Open Attack Menu
 		return true;
 	}
