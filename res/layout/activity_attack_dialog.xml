@@ -1,0 +1,69 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".AttackDialogActivity" >
+
+    <Button
+        android:id="@+id/attackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="52dp"
+        android:layout_marginRight="21dp"
+        android:text="Attack" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/attackButton"
+        android:layout_alignBottom="@+id/attackButton"
+        android:layout_alignLeft="@+id/attack_name"
+        android:layout_marginLeft="28dp"
+        android:text="Cancel" />
+
+    <Spinner
+        android:id="@+id/soldierSelectorSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/attackButton"
+        android:layout_alignLeft="@+id/attack_name"
+        android:layout_marginBottom="28dp"
+        android:prompt="@string/spinnerPrompt" />
+
+    <TextView
+        android:id="@+id/venue_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="19dp"
+        android:layout_marginTop="68dp"
+        android:text="Current Mayor: Richard\nDefence: 5" />
+
+    <TextView
+        android:id="@+id/venueName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/venue_info"
+        android:layout_marginTop="19dp"
+        android:text="Venue Name"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/soldierSelectorSpinner"
+        android:layout_alignLeft="@+id/soldierSelectorSpinner"
+        android:text="Number of soldiers to attack with:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>
