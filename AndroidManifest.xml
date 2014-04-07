@@ -43,7 +43,15 @@
         </activity>
         <activity
             android:name="ca.shaneforster.warfaresquare.AttackDialogActivity"
-            android:label="@string/title_activity_attack_dialog" >
+            android:label="@string/title_activity_attack_dialog" 
+ 			android:theme="@android:style/Theme.Dialog">
+        </activity>
+        <activity
+            android:name="ca.shaneforster.warfaresquare.CouponActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_coupon"
+            android:theme="@style/FullscreenTheme" >
         </activity>
     </application>
 
