@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,9 +24,13 @@ public class AttackDialogActivity extends Activity implements OnClickListener, O
 	private String venue_id;
 	private int attackWith;
 	private Button btnAttack, btnCancel;
-	private TextView tv_venue, tv_info;
+	private TextView tv_venue, tv_info, soldierPrompt;
 	private Spinner spin_soldiers;
 	private Venue v;
+	protected Boolean attack;
+	
+	private List<String> soldierList;
+	private ArrayAdapter<String> dataAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +45,17 @@ public class AttackDialogActivity extends Activity implements OnClickListener, O
 		btnCancel = (Button) findViewById(R.id.cancelButton);
 		tv_venue = (TextView) findViewById(R.id.venueName);
 		tv_info = (TextView) findViewById(R.id.venue_info);
+		soldierPrompt = (TextView) findViewById(R.id.textView1);
 		spin_soldiers = (Spinner) findViewById(R.id.soldierSelectorSpinner);
 		
 		attackWith = MainActivity.user.getSoldiers();
 		spin_soldiers.setOnItemSelectedListener(this);
 		
 		
-		List<String> soldierList = new ArrayList<String>(11);
+		soldierList = new ArrayList<String>(11);
 		for (int i = 0; i <= MainActivity.user.getSoldiers(); i++)
 			soldierList.add(Integer.toString(i));
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+		dataAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, soldierList);
 		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spin_soldiers.setAdapter(dataAdapter);
@@ -71,8 +78,22 @@ public class AttackDialogActivity extends Activity implements OnClickListener, O
 		tv_info.setText(v.infoString());
 		
 		if (v.getMayor().getUserName().equals(MainActivity.user.getUserName())){
-			//Cannot attack yourself
-			btnAttack.setEnabled(false);
+			soldierPrompt.setText("Number of soldiers to pickup:");
+			btnAttack.setText("Pickup!");
+			btnAttack.setEnabled(true);
+			soldierList.clear();
+			for (int i = 0; i <= v.getDefence(); i++)
+				soldierList.add(Integer.toString(i));
+			dataAdapter.notifyDataSetChanged();
+			spin_soldiers.setSelection(0);
+		} else if ("Unclaimed".equals(v.getMayor().getUserName())){
+			soldierPrompt.setText("Number of soldiers to attack with:");
+			btnAttack.setEnabled(true);
+			btnAttack.setText("Claim!");
+		} else {
+			soldierPrompt.setText("Number of soldiers to attack with:");
+			btnAttack.setEnabled(true);
+			btnAttack.setText("Attack!");
 		}
 
 	}
@@ -86,22 +107,48 @@ public class AttackDialogActivity extends Activity implements OnClickListener, O
 
 	@Override
 	public void onClick(View arg0) {
-		Toast.makeText(this, "Call Server for attack. Attack venue with " + attackWith + " soldiers.", Toast.LENGTH_LONG).show();
+		
+		if (v.getMayor().getUserName().equals(MainActivity.user.getUserName())){
+			v.setDefence(v.getDefence() - attackWith);
+			MainActivity.user.setSoldiers(MainActivity.user.getSoldiers() + attackWith);
+		} else {
+			MainActivity.user.setSoldiers(MainActivity.user.getSoldiers() - attackWith);
+			
+			if (Math.random() >= 0.5 || "Unclaimed".equals(v.getMayor().getUserName())){
+				Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show();
+				v.setMayor(MainActivity.user);
+				v.setDefence(attackWith);
+				
+				
+			} else {
+				Toast.makeText(this, "Failure!", Toast.LENGTH_SHORT).show();
+			}
+		}
 		
 		//update with success/failure
-		
+		new UpdateMap().execute();
+
+		finish();
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
 		attackWith = Integer.parseInt((String) parent.getItemAtPosition(pos));
-		if (attackWith < 1 || (v.getMayor().getUserName().equals(MainActivity.user.getUserName())))
+		if (attackWith < 1 )
 			btnAttack.setEnabled(false);
-			//Cant attack with no one
-		else
+			//Cant attack/pickup with no one
+		else if (v.getMayor().getUserName().equals(MainActivity.user.getUserName())){
 			btnAttack.setEnabled(true);
-		
+			btnAttack.setText("Pickup!");
+		} else if ("Unclaimed".equals(v.getMayor().getUserName())){
+			btnAttack.setEnabled(true);
+			btnAttack.setText("Claim!");
+		}
+		else {
+			btnAttack.setEnabled(true);
+			btnAttack.setText("Attack");
+		}
 	}
 
 	@Override

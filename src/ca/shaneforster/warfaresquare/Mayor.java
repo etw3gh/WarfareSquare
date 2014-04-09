@@ -6,15 +6,15 @@ public class Mayor {
 	private int flagId;
 	
 	public Mayor(){
-		this.userName = "undefined";
+		this.userName = "Unclaimed";
 		this.soldiers = 0;
-		this.flagId = R.drawable.mk_flag_t0;
+		this.flagId = R.drawable.mk_flag_unclaimed;
 	}
 	
 	public Mayor(String name){
 		this.userName = name;
 		this.soldiers = -1;
-		this.flagId = R.drawable.mk_flag_t0;
+		this.flagId = R.drawable.mk_flag_unclaimed;
 	}
 	
 	public Mayor(String name, int soldiers, int flagId){

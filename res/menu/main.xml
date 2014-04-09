@@ -15,8 +15,8 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_websearch"
-          android:icon="@drawable/action_search"
-          android:title="@string/action_websearch"
+    <item android:id="@+id/demo_reset"
+          android:icon="@drawable/ic_action_refresh"
+          android:title="@string/demo_reset"
           android:showAsAction="ifRoom|withText" />
 </menu>

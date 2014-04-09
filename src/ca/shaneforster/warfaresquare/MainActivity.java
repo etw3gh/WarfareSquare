@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 	public static final String VENUE_ID = "ca.shaneforster.warfaresquare.VENUE_ID";
 	public static final String USER_NAME = "ca.shaneforster.warfaresquare.USER_NAME";
 	private MapFragment warMapFragment;
-	private GoogleMap warMap;
+	//private GoogleMap warMap;
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -46,16 +46,23 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 	private String[] menuItems;
 	
 	private SharedPreferences prefs;
+	private boolean firstRun; 
+	
+	private Location location;
 	protected static Mayor user;
 	protected static HashMap<String, Venue> venues;
+	protected static HashMap<String, Venue> demoVenues;
 	protected static LatLng userLocation;
+	protected static GoogleMap warMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+		location=((LocationManager)getSystemService(LOCATION_SERVICE)).getLastKnownLocation(((LocationManager)getSystemService(LOCATION_SERVICE)).getBestProvider(new Criteria(), true));
 		prefs = getPreferences(MODE_PRIVATE);
+		
+		firstRun = true;
 		
 		user = new Mayor(prefs.getString(USER_NAME, "default"));
 		
@@ -65,9 +72,10 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 		}
 		
 		//Demo code
-		user = new Mayor("Shane", 8, R.drawable.mk_flag_t4);
-		
+		user = new Mayor("Geoff Lachapelle", 10, R.drawable.mk_flag_t4);
+		//End demo
 		venues = new HashMap<String, Venue>();
+		demoVenues = new HashMap<String, Venue>();
 		
 		warMapFragment = MapFragment.newInstance();
 		
@@ -111,16 +119,7 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
-		Venue v;
-		v = new Venue("DMZ", new LatLng(43.656746, -79.380484), new Mayor("RichardLachman", 10, R.drawable.mk_flag_t1), 5);
-		venues.put(v.toString(), v);
-		
-		v = new Venue("Oakham House", new LatLng(43.657780, -79.379088), new Mayor("Geoff Lachapelle", 9, R.drawable.mk_flag_t3), 2);
-		venues.put(v.toString(), v);
-
-		v = new Venue("Podium", new LatLng(43.6583927, -79.380994), user, 4);
-		venues.put(v.toString(), v);
+		demoContent(false);
 		
 
 		if (savedInstanceState == null) {
@@ -141,7 +140,7 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 		// If the nav drawer is open, hide action items related to the content
 		// view
 		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-		menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+		menu.findItem(R.id.demo_reset).setVisible(true);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -153,9 +152,15 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 			return true;
 		}
 		// Handle action buttons
-
-		return super.onOptionsItemSelected(item);
-
+        switch(item.getItemId()) {
+        case R.id.demo_reset:
+            // create intent to perform web search for this planet
+            demoContent(true);
+            new UpdateMap().execute();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
 	}
 
 	@Override
@@ -167,22 +172,17 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 		if (warMap == null)
 			Toast.makeText(this, "No Map!", Toast.LENGTH_LONG).show();
 		
-		warMap.clear();
-		//TODO get nearby venues load into venues
-		
-		
-		for (Map.Entry<String, Venue> ven : venues.entrySet()){
-			warMap.addMarker(ven.getValue().genMarkerOptions());
-		}
-
-		
 		warMap.setMyLocationEnabled(true);
 		warMap.setOnMarkerClickListener(this);
 
-	    Location location=((LocationManager)getSystemService(LOCATION_SERVICE)).getLastKnownLocation(((LocationManager)getSystemService(LOCATION_SERVICE)).getBestProvider(new Criteria(), true));
+	    location=((LocationManager)getSystemService(LOCATION_SERVICE)).getLastKnownLocation(((LocationManager)getSystemService(LOCATION_SERVICE)).getBestProvider(new Criteria(), true));
 	    userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 		
-	    warMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+	    new UpdateMap().execute();
+	    if (firstRun){
+	    	warMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+	    	firstRun = false;
+	    }
 		
 		
 	}
@@ -207,14 +207,16 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 	}
 
 	private void selectItem(int position) {
-		Fragment fragment = null;
+		Fragment fragment = warMapFragment;
 		switch (position) {
 		case 0:
-			fragment = warMapFragment;
+			//fragment = warMapFragment;
 			break;
 		case 1:
 			Intent i = new Intent(this, CouponActivity.class);
 			startActivity(i);
+			
+			break;
 		default:
 			Toast.makeText(this, "Not Implemented", Toast.LENGTH_LONG).show();
 			fragment = new Fragment();
@@ -262,6 +264,20 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 		intent.putExtra(VENUE_ID, m.getSnippet());
 		startActivity(intent);
 		return true;
+	}
+	
+	
+	protected static void demoContent(boolean clearMap){
+		if (clearMap)
+			warMap.clear();
+		demoVenues.clear();
+		Venue v = new Venue("Digital Media Zone", new LatLng(43.656546, -79.380535), new Mayor("Hossein Rahnama", 5, R.drawable.mk_flag_t1), 5);
+		demoVenues.put(v.toString(), v);
+		v = new Venue("Rogers Communication Centre", new LatLng(43.658668,-79.377031), new Mayor("Richard Lachman", 5, R.drawable.mk_flag_t2), 5);
+		demoVenues.put(v.toString(), v);
+		v = new Venue("Geoge Vari Engineering Buliding", new LatLng(43.6577,-79.37732), new Mayor("Shane Forster", 5, R.drawable.mk_flag_t3), 5);
+		demoVenues.put(v.toString(), v);
+		user.setSoldiers(10);
 	}
 	
 
