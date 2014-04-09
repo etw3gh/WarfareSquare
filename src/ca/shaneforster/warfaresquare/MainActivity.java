@@ -154,7 +154,7 @@ public class MainActivity extends Activity implements OnMarkerClickListener{
 		// Handle action buttons
         switch(item.getItemId()) {
         case R.id.demo_reset:
-            // create intent to perform web search for this planet
+            //
             demoContent(true);
             new UpdateMap().execute();
             return true;

@@ -66,4 +66,24 @@
         android:text="Number of soldiers to attack with:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+
+    <RadioGroup 
+        android:id="@+id/actionGroup"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/textView1"
+	    android:layout_alignLeft="@+id/textView1"
+	    android:orientation="vertical">
+	    <RadioButton android:id="@+id/radio_reinforce"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Reinforce"
+	        android:onClick="onRadioButtonClicked"/>
+	    <RadioButton android:id="@+id/radio_ninjas"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Pickup"
+	        android:onClick="onRadioButtonClicked"/>
+	</RadioGroup>
+
 </RelativeLayout>
